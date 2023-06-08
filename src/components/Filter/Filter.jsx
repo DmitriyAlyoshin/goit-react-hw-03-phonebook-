@@ -4,7 +4,7 @@ import { FilterLabel, FilterInput } from './Filter.styled';
 export function Filter({ value, onFilter }) {
   return (
     <FilterLabel>
-      Find contacts by name
+      Find contacts by name!
       <FilterInput
         type="text"
         name="filter"
