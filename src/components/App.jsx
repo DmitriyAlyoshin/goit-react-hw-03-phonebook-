@@ -7,6 +7,8 @@ import { Container, Wrapper, Phonebook, Contacts } from './App.styled';
 
 import Notiflix from 'notiflix';
 
+let CONTACTS_KEY = 'contacts';
+
 export class App extends Component {
   state = {
     contacts: [
@@ -21,14 +23,31 @@ export class App extends Component {
     filter: '',
   };
 
+  
+
   onChangeInput = evt => {
     const { name, value } = evt.currentTarget;
 
     this.setState({ [name]: value });
   };
 
+  componentDidMount = () => {
+    const contacts = localStorage.getItem(CONTACTS_KEY);
+    const parsedContacts = JSON.parse(contacts);
+
+    if (parsedContacts) {
+      this.setState({ contacts: parsedContacts });
+    }
+  };
+
+  componentDidUpdate = (_, prevState) => {
+    if (this.state.contacts !== prevState.contacts) {
+      localStorage.setItem(CONTACTS_KEY, JSON.stringify(this.state.contacts));
+    }
+  };
+
   addContact = data => {
-    if (this.state.contacts.find(contact => data.name === contact.name )) {
+    if (this.state.contacts.find(contact => data.name === contact.name)) {
       Notiflix.Notify.warning(`${data.name} is already in contacts!`, {
         position: 'center-center',
         fontSize: '25px',
@@ -38,28 +57,11 @@ export class App extends Component {
     }
 
     this.setState(oldState => ({
-      contacts: [
-        ...oldState.contacts, { ...data, id: nanoid(), },
-      ],
+      contacts: [...oldState.contacts, { ...data, id: nanoid() }],
     }));
   };
 
-  //   } else {
-  //     this.setState(oldState => {
-  //       const list = [...oldState.contacts];
-
-  //       list.push({
-  //         id: nanoid(),
-  //         name: name,
-  //         number: number,
-  //       });
-
-  //       return { contacts: list };
-  //     });
-  //   }
-  // };
-
-  addFilterContacts = ({ target, }) => {
+  addFilterContacts = ({ target }) => {
     this.setState({ filter: target.value });
   };
 
